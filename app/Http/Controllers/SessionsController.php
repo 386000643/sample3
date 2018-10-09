@@ -7,6 +7,13 @@ use Auth;
 
 class SessionsController extends Controller
 {
+
+    public function __construct(){
+        //只让未登陆用户访问登陆界面
+        $this->middleware('guest',[
+            'only'=>['create']
+        ]);
+    }
     public function create(){
         return view('sessions.create');
     }
@@ -20,7 +27,7 @@ class SessionsController extends Controller
         //attempt验证是否与数据库中的信息一致
         if (Auth::attempt($credentials,$request->has('remember'))) {
             session()->flash('success','登录成功');
-            return redirect()->route('users.show',[Auth::user()]);
+            return redirect()->intended(route('users.show',[Auth::user()]));
         }else{
             session()->flash('danger','邮箱与密码不符');
             return redirect()->back();
